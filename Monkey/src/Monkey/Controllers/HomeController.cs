@@ -12,7 +12,7 @@ namespace Monkey.Controllers
         {
             return View();
         }
-
+        /*
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
@@ -31,6 +31,6 @@ namespace Monkey.Controllers
         {
             return View(); 
         }
-        //GIT Test
+        *///jskim, 20170214 unnecessary information deleted
     }
 }
