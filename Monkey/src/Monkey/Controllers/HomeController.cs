@@ -24,7 +24,7 @@ namespace Monkey.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(ICollection<IFormFile> baseFiles)
+        public IActionResult Index(ICollection<IFormFile> baseFiles) 
         {
             var uploads = Path.Combine(_environment.WebRootPath, "base");
             foreach (var file in baseFiles)
