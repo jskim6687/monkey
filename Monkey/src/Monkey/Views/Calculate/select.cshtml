@@ -1,5 +1,78 @@
 ﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
-@{
-}
+@using System.IO
+<form>
+    <table>
+        <tr>
+            baseFile
+        </tr>
+        <td>Select</td>
+        <td>Station</td>
+        <td>GPS Week</td>
+        <td>Order</td>
+        <td>Year</td>
+        <tr>
+            @{foreach (var baseFile in (FileInfo[])ViewData["baseList"])
+                {
+                    if (baseFile.ToString().EndsWith("o"))
+                    {
+                        <tr>
+                        <td>
+                            <input type="radio" />
+                        </td>
+                            <td>
+                                @baseFile.ToString().Substring(0, 4)
+                            </td>
+                            <td>
+                                @int.Parse(baseFile.ToString().Substring(4, 3))
+                            </td>
+                            <td>
+                                @int.Parse(baseFile.ToString().Substring(7, 1))
+                            </td>
+                            <td>
+                                @int.Parse(baseFile.ToString().Substring(9, 2))
+                                </td>
+                            </tr>
+                    }
+                }
+            }
+        </tr>
+    </table>
+    <table>
+        <tr>
+        roverFile
+        </tr>
+        <tr>
+            <td>Select</td>
+            <td>Station</td>
+            <td>GPS Week</td>
+            <td>Order</td>
+            <td>Year</td>
+    @{foreach (var roverFile in (FileInfo[])ViewData["roverList"])
+            {
+                if (roverFile.ToString().EndsWith("o"))
+                {
+            <tr>
+                <td>
+                    <input type="radio" />
+                </td>
+                <td>
+                    @roverFile.ToString().Substring(0, 4)
+                </td>
+                <td>
+                    @int.Parse(roverFile.ToString().Substring(4, 3))
+                </td>
+                <td>
+                    @int.Parse(roverFile.ToString().Substring(7, 1))
+                </td>
+                <td>
+                    @int.Parse(roverFile.ToString().Substring(9, 2))
+                </td>
+            </tr>
+            }
+        }
+    }
+        </tr>
+    </table>
+</form>
