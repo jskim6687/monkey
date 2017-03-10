@@ -1,16 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{33969EC3-51ED-418F-A7B7-1BD05A97397C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3285349B-8E65-4FA2-BC32-2563DD0FFFDE}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Monkey", "src\Monkey\Monkey.xproj", "{8D3953A0-CD49-46DB-A10E-15578E384997}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monkey", "src\Monkey\Monkey.csproj", "{8D3953A0-CD49-46DB-A10E-15578E384997}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,10 +10,7 @@ namespace Monkey.Controllers
 {
     public class HomeController : Controller
     {
-        public string oFileName;
-
-        public string nFileName;
-
+    
         private IHostingEnvironment _environment;
 
         public HomeController(IHostingEnvironment environment)
@@ -27,40 +24,40 @@ namespace Monkey.Controllers
         }
 
         [HttpPost]
-        public IActionResult Index(ICollection<IFormFile> files)
+        public IActionResult Index(ICollection<IFormFile> baseFiles) 
         {
-            var uploads = Path.Combine(_environment.WebRootPath, "uploads");
-            foreach (var file in files)
+            var uploads = Path.Combine(_environment.WebRootPath, "base");
+            foreach (var file in baseFiles)
             {
                 if (file.Length > 0)
                 {
                     using (var fileStream = new FileStream(Path.Combine(uploads, file.FileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
-                        var fileName = file.FileName; 
+                        var fileName = file.FileName;
                         if (fileName.EndsWith("o"))
                         {
-                            oFileName = fileName;
-/*                            new Ofiles
+                            ViewData["baseOfile"] = file;
+                            new Ofiles
                             {
                                 name = fileName,
                                 stationName = fileName.Substring(0,4),
                                 gpsday = int.Parse(fileName.Substring(4,3)),
                                 order = int.Parse(fileName.Substring(7,1)),
                                 year = int.Parse(fileName.Substring(9,2))
-                            };*/
+                            };
                         }
                         else if (fileName.EndsWith("n"))
                         {
-                            nFileName = file.FileName;
-/*                            new Nfiles
+                            ViewData["baseNfile"] = file;
+                            new Nfiles
                             {
                                 name = fileName,
                                 stationName = fileName.Substring(0, 4),
                                 gpsday = int.Parse(fileName.Substring(4, 3)),
                                 order = int.Parse(fileName.Substring(7, 1)),
                                 year = int.Parse(fileName.Substring(9, 2))
-                            };*/
+                            };
                         }
                         else
                         {
@@ -70,15 +67,72 @@ namespace Monkey.Controllers
                     }
                 }
             }
-            if (files.Count > 0)
+            if (baseFiles.Count > 0)
             {
-                return RedirectToAction("Info","Upload", new {nFileName = nFileName, oFileName = oFileName /*uploadFiles = files*/});
+                return View();
+                //return Info();
             }
             else
             {
                 return View();
             }
         }
+
+        [HttpPost]
+        public IActionResult Index_2(ICollection<IFormFile> roverFiles)
+        {
+            var uploads = Path.Combine(_environment.WebRootPath, "rover");
+            foreach (var file in roverFiles)
+            {
+                if (file.Length > 0)
+                {
+                    using (var fileStream = new FileStream(Path.Combine(uploads, file.FileName), FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                        var fileName = file.FileName;
+                        if (fileName.EndsWith("o"))
+                        {
+                            ViewData["roverOfile"] = file;
+                            new Ofiles
+                            {
+                                name = fileName,
+                                stationName = fileName.Substring(0, 4),
+                                gpsday = int.Parse(fileName.Substring(4, 3)),
+                                order = int.Parse(fileName.Substring(7, 1)),
+                                year = int.Parse(fileName.Substring(9, 2))
+                            };
+                        }
+                        else if (fileName.EndsWith("n"))
+                        {
+                            ViewData["roverNfile"] = file;
+                            new Nfiles
+                            {
+                                name = fileName,
+                                stationName = fileName.Substring(0, 4),
+                                gpsday = int.Parse(fileName.Substring(4, 3)),
+                                order = int.Parse(fileName.Substring(7, 1)),
+                                year = int.Parse(fileName.Substring(9, 2))
+                            };
+                        }
+                        else
+                        {
+
+                        }
+                        //                        await file.CopyToAsync(fileStream);
+                    }
+                }
+            }
+            if (roverFiles.Count > 0)
+            {
+                return View();
+                //return Info();
+            }
+            else
+            {
+                return View();
+            }
+        }
+
 
         /*
         [HttpPost]
