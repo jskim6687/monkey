@@ -10,7 +10,10 @@ namespace Monkey.Controllers
 {
     public class HomeController : Controller
     {
-    
+        public string oFileName;
+
+        public string nFileName;
+
         private IHostingEnvironment _environment;
 
         public HomeController(IHostingEnvironment environment)
@@ -34,28 +37,30 @@ namespace Monkey.Controllers
                     using (var fileStream = new FileStream(Path.Combine(uploads, file.FileName), FileMode.Create))
                     {
                         file.CopyTo(fileStream);
-                        var fileName = file.FileName;
+                        var fileName = file.FileName; 
                         if (fileName.EndsWith("o"))
                         {
-                            new Ofiles
+                            oFileName = fileName;
+/*                            new Ofiles
                             {
                                 name = fileName,
                                 stationName = fileName.Substring(0,4),
                                 gpsday = int.Parse(fileName.Substring(4,3)),
                                 order = int.Parse(fileName.Substring(7,1)),
                                 year = int.Parse(fileName.Substring(9,2))
-                            };
+                            };*/
                         }
                         else if (fileName.EndsWith("n"))
                         {
-                            new Ofiles
+                            nFileName = file.FileName;
+/*                            new Nfiles
                             {
                                 name = fileName,
                                 stationName = fileName.Substring(0, 4),
                                 gpsday = int.Parse(fileName.Substring(4, 3)),
                                 order = int.Parse(fileName.Substring(7, 1)),
                                 year = int.Parse(fileName.Substring(9, 2))
-                            };
+                            };*/
                         }
                         else
                         {
@@ -67,8 +72,7 @@ namespace Monkey.Controllers
             }
             if (files.Count > 0)
             {
-                return View();
-                //return Info();
+                return RedirectToAction("Info","Upload", new {nFileName = nFileName, oFileName = oFileName /*uploadFiles = files*/});
             }
             else
             {
