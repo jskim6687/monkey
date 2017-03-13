@@ -6,7 +6,7 @@ using Monkey.Models;
 
 namespace Monkey.Models
 {
-    public class FileRepository : IFileRepository
+    public class FileRepository
     {
         public void getOfileInfo(string oFileName)
         {

@@ -20,6 +20,7 @@ namespace Monkey.Controllers
         }
 
         // GET: /<controller>/
+        [HttpGet]
         public IActionResult Select()
         {
             var baseRoot = Path.Combine(_environment.WebRootPath, "base");
@@ -39,5 +40,20 @@ namespace Monkey.Controllers
 
             return View();
         }
+
+        [HttpPost]
+        public IActionResult Orbit(string baseFile, string roverFile)
+        {
+            var baseRoot = Path.Combine(_environment.WebRootPath, "base\\", baseFile);
+            var roverRoot = Path.Combine(_environment.WebRootPath, "rover\\", roverFile);
+
+            var baseStream = new FileStream(baseRoot, FileMode.Open);
+            var roverStream = new FileStream(roverRoot, FileMode.Open);
+            
+            //여기서 부터 위성 궤도 올리고 보정신호 처리
+
+            return View();
+        }
+
     }
 }
