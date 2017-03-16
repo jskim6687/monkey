@@ -73,7 +73,7 @@ namespace Monkey.Controllers
             int j = 1;
             int row = 1;
             int numSat = 1;
-            string[] sat = new string[30];
+            string[] sat = new string[50];
             int year = 1;
             int month = 1;
             int day = 1;
@@ -105,16 +105,31 @@ namespace Monkey.Controllers
                             var satName = fileLine.Substring((3 * k) + 32, 3);
                             sat[k] = satName;
                         }
-
-                        fileLine = reader.ReadLine();
-                        row = row + 1;
-                        fileLine = fileLine.Trim();
-                        //numSat = 12 + (fileLine.Length / 3);
-
-                        for (int k = 0; k < fileLine.Length / 3; k++)
+                    
+                        if(numSat > 12)
                         {
-                            var satName = fileLine.Substring(k * 3, 3);
-                            sat[12 + k] = satName;
+                            fileLine = reader.ReadLine();
+                            row = row + 1;
+                            fileLine = fileLine.Trim();
+                            //numSat = 12 + (fileLine.Length / 3);
+
+                            for (int k = 0; k < fileLine.Length / 3; k++)
+                            {
+                                var satName = fileLine.Substring(k * 3, 3);
+                                sat[12 + k] = satName;
+                            }
+                            if(numSat > 24)
+                            {
+                                fileLine = reader.ReadLine();
+                                row = row + 1;
+                                fileLine = fileLine.Trim();
+
+                                for(int k = 0; k < fileLine.Length / 3; k++)
+                                {
+                                    var satName = fileLine.Substring(k * 3, 3);
+                                    sat[24 + k] = satName;
+                                }
+                            }
                         }
                     }
                     j = j + 2;
