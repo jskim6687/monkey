@@ -36,6 +36,15 @@ namespace Monkey.Models
             }
         }
 
+        public void AddNfile(navigation nav)
+        {
+            using (IDatabase db = Connection)
+            {
+                db.Insert<navigation>(nav);
+            }
+
+        }
+
         public void DeleteAll()
         {
             using (IDatabase db = Connection)

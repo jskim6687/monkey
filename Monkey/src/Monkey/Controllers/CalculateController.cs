@@ -45,11 +45,18 @@ namespace Monkey.Controllers
         [HttpPost]
         public IActionResult Orbit(string baseFile, string roverFile)
         {
+            var navFile = baseFile.Remove(11,1) + "n";
             var baseRoot = Path.Combine(_environment.WebRootPath, "base\\", baseFile);
             var roverRoot = Path.Combine(_environment.WebRootPath, "rover\\", roverFile);
-
+            var navRoot = Path.Combine(_environment.WebRootPath, "base\\", navFile);
+            ViewBag.Condition = "uploading the rover file";
             makeEpoch(roverRoot, "rover");
+
+            ViewBag.Condition = "uploading the base file";
             makeEpoch(baseRoot, "base");
+
+            ViewBag.Condition = "uploading the navigation file";
+            svNavigation(navRoot);
 
             //여기서 부터 위성 궤도 올리고 보정신호 처리
 
@@ -185,6 +192,85 @@ namespace Monkey.Controllers
                     }
                     j = 1;
                 }
+            }
+        }
+
+        public void svNavigation(string root)
+        {
+            var stream = new FileStream(root, FileMode.Open);
+            var reader = new StreamReader(stream, System.Text.Encoding.ASCII);
+            var addNfile = new FileRepository();
+
+            var navigation = new navigation();
+
+            for (int i = 0; i < 9; i++)
+            {
+                reader.ReadLine();
+            }
+
+            while (reader.EndOfStream == false)
+            {
+                var fileLine = reader.ReadLine(); //1st row
+
+                navigation.prn = int.Parse(fileLine.Substring(0,2));
+                navigation.year = int.Parse(fileLine.Substring(3, 2));
+                navigation.month = int.Parse(fileLine.Substring(6, 2));
+                navigation.day = int.Parse(fileLine.Substring(9,2));
+                navigation.hour = int.Parse(fileLine.Substring(12,2));
+                navigation.minute = int.Parse(fileLine.Substring(15,2));
+                navigation.second = double.Parse(fileLine.Substring(18,4));
+                navigation.svClockBias = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10,double.Parse(fileLine.Substring(38,3)));
+                navigation.svClockDrift = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
+                navigation.svClockDriftRate = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
+
+                fileLine = reader.ReadLine(); //2nd row
+
+                navigation.IODE = double.Parse(fileLine.Substring(3,15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
+                navigation.crs = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
+                navigation.deltaN = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
+                navigation.m0 = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
+
+                fileLine = reader.ReadLine(); //3rd row
+
+                navigation.cuc = double.Parse(fileLine.Substring(3, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
+                navigation.e = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
+                navigation.cus = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
+                navigation.rootA = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
+
+                fileLine = reader.ReadLine(); //4th row
+
+                navigation.toe = double.Parse(fileLine.Substring(3, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
+                navigation.cic = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
+                navigation.ohm0 = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
+                navigation.cis = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
+
+                fileLine = reader.ReadLine(); //5th row
+
+                navigation.i0 = double.Parse(fileLine.Substring(3, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
+                navigation.crc = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
+                navigation.w = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
+                navigation.ohmDot = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
+
+                fileLine = reader.ReadLine(); //6th row
+
+                navigation.iDot = double.Parse(fileLine.Substring(3, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
+                navigation.L2Code = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
+                navigation.gpsWeek = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
+                navigation.L2PFlag = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
+
+                fileLine = reader.ReadLine(); //7th row
+
+                navigation.svAccuracy = double.Parse(fileLine.Substring(3, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
+                navigation.svHealth = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
+                navigation.TDG = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
+                navigation.IODC = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
+
+                fileLine = reader.ReadLine(); //8th row
+
+                navigation.Tx = double.Parse(fileLine.Substring(3, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
+                navigation.fitInterval = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
+
+                addNfile.AddNfile(navigation);
             }
         }
 
