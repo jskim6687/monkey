@@ -59,6 +59,7 @@ namespace Monkey.Models
 
             using (IDatabase db = Connection)
             {
+                //각 에포크마다 반복시작
                 List<epochSV> baseSV = db.Fetch<epochSV>("select satNum, satType where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString() + " and type = 'base'");
                 List<epochSV> roverSV = db.Fetch<epochSV>("select satNum, satType where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString() + " and type = 'rover'");
 
@@ -81,6 +82,8 @@ namespace Monkey.Models
                         }
                     }
                 }
+
+            //각 에포크 반복 종료
             }
             return commonSV;
         }

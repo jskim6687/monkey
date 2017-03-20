@@ -54,8 +54,6 @@ namespace Monkey.Controllers
             makeEpoch(baseRoot, "base"); //base o파일 업로드
             svNavigation(navRoot); //navigation 파일 업로드
 
-            //공통 위성 뽑아내는 알고리즘 시작
-
             var year = int.Parse(baseFile.Substring(9,2));
             var gpsday = int.Parse(baseFile.Substring(4,3));
 
@@ -296,13 +294,12 @@ namespace Monkey.Controllers
                 monthDay[1] = 29;
             }
 
-            while (gpsday-monthDay[calculatedMonthDay[0]-1] > 0)
+            while (calculatedMonthDay[1]-monthDay[calculatedMonthDay[0]-1] > 0)
             {
                 calculatedMonthDay[1] = calculatedMonthDay[1] - monthDay[calculatedMonthDay[0] - 1];
                 calculatedMonthDay[0] = calculatedMonthDay[0] + 1;
             }
             return calculatedMonthDay;
         }
-
     }
 }
