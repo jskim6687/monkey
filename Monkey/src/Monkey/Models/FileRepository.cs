@@ -53,29 +53,60 @@ namespace Monkey.Models
             }
         }
 
-/*
-        public void getOfileInfo(string oFileName)
+        public List<commonSV> selectEachSV(int year, int month, int day, int hour, int minute, int second)
         {
-            new Ofiles
+            var commonSV = new List<commonSV>();
+
+            using (IDatabase db = Connection)
             {
-                name = oFileName,
-                stationName = oFileName.Substring(0, 4),
-                gpsday = int.Parse(oFileName.Substring(4, 3)),
-                order = int.Parse(oFileName.Substring(7, 1)),
-                year = int.Parse(oFileName.Substring(9, 2))
-            };
+                List<epochSV> baseSV = db.Fetch<epochSV>("select satNum, satType where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString() + " and type = 'base'");
+                List<epochSV> roverSV = db.Fetch<epochSV>("select satNum, satType where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString() + " and type = 'rover'");
+
+                for (int i = 0 ; i< baseSV.Count ; i++)
+                {
+                    for(int j =0; j < roverSV.Count; j++)
+                    {
+                        if (baseSV[i].num == roverSV[j].num && baseSV[i].type == roverSV[j].type)
+                        {
+                            var SVitem = new commonSV();
+                            SVitem.year = year;
+                            SVitem.month = month;
+                            SVitem.day = day;
+                            SVitem.hour = hour;
+                            SVitem.minute = minute;
+                            SVitem.second = second;
+                            SVitem.num = baseSV[i].num;
+                            SVitem.type = baseSV[i].type;
+                            commonSV.Add(SVitem);
+                        }
+                    }
+                }
+            }
+            return commonSV;
         }
-        public void getNfileInfo(string nFileName)
-        {
-            new Nfiles
-            {
-                name = nFileName,
-                stationName = nFileName.Substring(0, 4),
-                gpsday = int.Parse(nFileName.Substring(4, 3)),
-                order = int.Parse(nFileName.Substring(7, 1)),
-                year = int.Parse(nFileName.Substring(9, 2))
-            };
-        }
-        */
+        /*
+                public void getOfileInfo(string oFileName)
+                {
+                    new Ofiles
+                    {
+                        name = oFileName,
+                        stationName = oFileName.Substring(0, 4),
+                        gpsday = int.Parse(oFileName.Substring(4, 3)),
+                        order = int.Parse(oFileName.Substring(7, 1)),
+                        year = int.Parse(oFileName.Substring(9, 2))
+                    };
+                }
+                public void getNfileInfo(string nFileName)
+                {
+                    new Nfiles
+                    {
+                        name = nFileName,
+                        stationName = nFileName.Substring(0, 4),
+                        gpsday = int.Parse(nFileName.Substring(4, 3)),
+                        order = int.Parse(nFileName.Substring(7, 1)),
+                        year = int.Parse(nFileName.Substring(9, 2))
+                    };
+                }
+                */
     }
 }

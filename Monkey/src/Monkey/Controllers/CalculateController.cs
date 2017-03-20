@@ -49,16 +49,20 @@ namespace Monkey.Controllers
             var baseRoot = Path.Combine(_environment.WebRootPath, "base\\", baseFile);
             var roverRoot = Path.Combine(_environment.WebRootPath, "rover\\", roverFile);
             var navRoot = Path.Combine(_environment.WebRootPath, "base\\", navFile);
-            ViewBag.Condition = "uploading the rover file";
-            makeEpoch(roverRoot, "rover");
 
-            ViewBag.Condition = "uploading the base file";
-            makeEpoch(baseRoot, "base");
+            makeEpoch(roverRoot, "rover"); //rover o파일 업로드
+            makeEpoch(baseRoot, "base"); //base o파일 업로드
+            svNavigation(navRoot); //navigation 파일 업로드
 
-            ViewBag.Condition = "uploading the navigation file";
-            svNavigation(navRoot);
+            //공통 위성 뽑아내는 알고리즘 시작
 
-            //여기서 부터 위성 궤도 올리고 보정신호 처리
+            var year = int.Parse(baseFile.Substring(9,2));
+            var gpsday = int.Parse(baseFile.Substring(4,3));
+
+            var monthDay = calculateDay(gpsday, year);
+
+            var month = monthDay[0];
+            var day = monthDay[1];
 
             return View();
         }
@@ -272,13 +276,33 @@ namespace Monkey.Controllers
 
                 addNfile.AddNfile(navigation);
             }
-        }
+        } //N파일 리딩 및 업로드
 
         public IActionResult Delete()
         {
             var fileRepo = new FileRepository();
             fileRepo.DeleteAll();
             return View();
+        }//기록된 레코드 삭제
+
+        public int[] calculateDay(int gpsday, int year) //GPSDay를 이용한 달과 일 계산
+        {
+            int[] calculatedMonthDay = new int[] { 1, gpsday };
+
+            int[] monthDay = new int[] {31,28,31,30,31,30,31,31,30,31,30,31};
+
+            if (year%4==0)
+            {
+                monthDay[1] = 29;
+            }
+
+            while (gpsday-monthDay[calculatedMonthDay[0]-1] > 0)
+            {
+                calculatedMonthDay[1] = calculatedMonthDay[1] - monthDay[calculatedMonthDay[0] - 1];
+                calculatedMonthDay[0] = calculatedMonthDay[0] + 1;
+            }
+            return calculatedMonthDay;
         }
+
     }
 }

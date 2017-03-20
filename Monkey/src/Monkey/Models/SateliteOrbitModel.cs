@@ -63,4 +63,23 @@ namespace Monkey.Models
         public double Tx { get; set; }
         public double fitInterval { get; set; }
     }
+
+    public class epochSV
+    {
+        public int num { get; set; }
+        public string type { get; set; }
+    }
+
+    public class commonSV
+    {
+        public int year { get; set; }
+        public int month { get; set; }
+        public int day { get; set; }
+        public int hour { get; set; }
+        public int minute { get; set; }
+        public int second { get; set; }
+        public int num { get; set; }
+        public string type { get; set; }
+    }
+
 }
