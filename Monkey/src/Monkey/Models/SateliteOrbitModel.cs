@@ -66,8 +66,8 @@ namespace Monkey.Models
 
     public class epochSV
     {
-        public int num { get; set; }
-        public string type { get; set; }
+        public int satNum { get; set; }
+        public string satType { get; set; }
     }
 
     public class commonSV

@@ -53,37 +53,62 @@ namespace Monkey.Models
             }
         }
 
-        public List<commonSV> selectEachSV(int year, int month, int day, int hour, int minute, int second)
+        public List<commonSV> selectEachSV(int year, int month, int day)
         {
             var commonSV = new List<commonSV>();
 
+            int hour = 0;
+            int minute = 0;
+            int second = 0;
+
             using (IDatabase db = Connection)
             {
-                //각 에포크마다 반복시작
-                List<epochSV> baseSV = db.Fetch<epochSV>("select satNum, satType where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString() + " and type = 'base'");
-                List<epochSV> roverSV = db.Fetch<epochSV>("select satNum, satType where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString() + " and type = 'rover'");
-
-                for (int i = 0 ; i< baseSV.Count ; i++)
+                while (hour < 24)
                 {
-                    for(int j =0; j < roverSV.Count; j++)
+                    var queryString = "select [satNum], [satType] from eachEpoch where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString();
+                    //각 에포크마다 반복시작
+                    List<epochSV> baseSV = db.Fetch<epochSV>(queryString + " and station = 'base'");
+                    List<epochSV> roverSV = db.Fetch<epochSV>(queryString + " and station = 'rover'");
+
+                    for (int i = 0; i < baseSV.Count; i++)
                     {
-                        if (baseSV[i].num == roverSV[j].num && baseSV[i].type == roverSV[j].type)
+                        for (int j = 0; j < roverSV.Count; j++)
                         {
-                            var SVitem = new commonSV();
-                            SVitem.year = year;
-                            SVitem.month = month;
-                            SVitem.day = day;
-                            SVitem.hour = hour;
-                            SVitem.minute = minute;
-                            SVitem.second = second;
-                            SVitem.num = baseSV[i].num;
-                            SVitem.type = baseSV[i].type;
-                            commonSV.Add(SVitem);
+                            if (baseSV[i].satNum == roverSV[j].satNum && baseSV[i].satType == roverSV[j].satType)
+                            {
+                                var SVitem = new commonSV();
+                                SVitem.year = year;
+                                SVitem.month = month;
+                                SVitem.day = day;
+                                SVitem.hour = hour;
+                                SVitem.minute = minute;
+                                SVitem.second = second;
+                                SVitem.num = baseSV[i].satNum;
+                                SVitem.type = baseSV[i].satType;
+                                commonSV.Add(SVitem);
+                            }
                         }
                     }
-                }
 
-            //각 에포크 반복 종료
+                    if (second == 0)
+                    {
+                        second = 30;
+                    }
+                    else
+                    {
+                        second = 0;
+                        if (minute == 59)
+                        {
+                            minute = 0;
+                            hour = hour + 1;
+                        }
+                        else
+                        {
+                            minute = minute + 1;
+                        }
+                    }
+                    //각 에포크 반복 종료
+                }
             }
             return commonSV;
         }

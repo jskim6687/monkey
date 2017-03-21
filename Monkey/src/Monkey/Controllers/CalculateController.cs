@@ -62,6 +62,10 @@ namespace Monkey.Controllers
             var month = monthDay[0];
             var day = monthDay[1];
 
+            FileRepository fileRepo = new FileRepository();
+
+            var commonSV = fileRepo.selectEachSV(year, month, day);
+
             return View();
         }
 
