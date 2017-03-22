@@ -305,5 +305,21 @@ namespace Monkey.Controllers
             }
             return calculatedMonthDay;
         }
+
+        public void getList(int year, int month, int day, List<commonSV> commonSV)
+        {
+            FileRepository repo = new FileRepository();
+            var list = repo.commonNavList(year, month, day);
+        }
+
+        public void calculateOrbit(commonSV commonSV, navigation nav)
+        {
+            var mu = 398600.5 * Math.Pow(10, 8);
+            var a = Math.Pow(nav.rootA,2); //Seminajor axis
+            var n = Math.Sqrt((mu)/(Math.Pow(a,3))) + nav.deltaN;
+            var weekday = (commonSV.day+Math.Floor((double)(commonSV.month+1)*26/10)+commonSV.year+Math.Floor((double)commonSV.year/4)+5-2*20) % 7;
+
+        }
+
     }
 }

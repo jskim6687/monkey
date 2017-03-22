@@ -112,6 +112,19 @@ namespace Monkey.Models
             }
             return commonSV;
         }
+
+        public List<navigation> commonNavList(int year, int month, int day)
+        {
+            var commonNavList = new List<navigation>();
+
+            using (IDatabase db = Connection)
+            {
+                var queryString = "select * from navigation where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + "order by year, month, day, hour, minute, second, prn";
+                commonNavList = db.Fetch<navigation>(queryString);
+            }
+
+            return commonNavList;
+        }
         /*
                 public void getOfileInfo(string oFileName)
                 {

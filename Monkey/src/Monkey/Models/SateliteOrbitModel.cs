@@ -82,4 +82,19 @@ namespace Monkey.Models
         public string type { get; set; }
     }
 
+    public class commonSVcoordinate
+    {
+        public int year { get; set; }
+        public int month { get; set; }
+        public int day { get; set; }
+        public int hour { get; set; }
+        public int minute { get; set; }
+        public int second { get; set; }
+        public int num { get; set; }
+        public string type { get; set; }
+        public double x { get; set; }
+        public double y { get; set; }
+        public double z { get; set; }
+    }
+
 }
