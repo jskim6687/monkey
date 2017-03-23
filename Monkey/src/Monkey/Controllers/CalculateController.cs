@@ -45,7 +45,7 @@ namespace Monkey.Controllers
         [HttpPost]
         public IActionResult Orbit(string baseFile, string roverFile)
         {
-            var navFile = baseFile.Remove(11,1) + "n";
+            var navFile = baseFile.Remove(11, 1) + "n";
             var baseRoot = Path.Combine(_environment.WebRootPath, "base\\", baseFile);
             var roverRoot = Path.Combine(_environment.WebRootPath, "rover\\", roverFile);
             var navRoot = Path.Combine(_environment.WebRootPath, "base\\", navFile);
@@ -54,17 +54,79 @@ namespace Monkey.Controllers
             makeEpoch(baseRoot, "base"); //base o파일 업로드
             svNavigation(navRoot); //navigation 파일 업로드
 
-            var year = int.Parse(baseFile.Substring(9,2));
-            var gpsday = int.Parse(baseFile.Substring(4,3));
+            var year = int.Parse(baseFile.Substring(9, 2));
+            var gpsday = int.Parse(baseFile.Substring(4, 3));
 
             var monthDay = calculateDay(gpsday, year);
 
             var month = monthDay[0];
             var day = monthDay[1];
 
-            FileRepository fileRepo = new FileRepository();
+            var weekDay = (day + Math.Floor((month + 1) * 2.6) + year + Math.Floor((double)year / 4) - 36) % 7;
 
+            FileRepository fileRepo = new FileRepository();
             var commonSV = fileRepo.selectEachSV(year, month, day);
+
+            var navList = new List<navigation>();
+
+            for (int i = 0; i < commonSV.Count; i++)
+            {
+                commonSVcoordinate common = new commonSVcoordinate();
+
+                var SVnum = commonSV[i].num;
+                var stationTime = 86400 * weekDay + commonSV[i].hour * 3600 + commonSV[i].minute * 60 + commonSV[i].second;
+
+                var commonSVitem = commonSV[i];
+
+                if (i == 0)
+                {
+                    navList = fileRepo.commonNavList(year, month, day, SVnum);
+                }
+                else if (SVnum != commonSV[i - 1].num)
+                {
+                    navList = fileRepo.commonNavList(year, month, day, SVnum);
+                }
+                else
+                {
+
+                }
+                if(navList.Count > 0)
+                {
+                    var navigationItem = navList[0];
+
+                    //여기서 부터 반복해서 계산
+                    for (int j = 0; j < navList.Count; j++)
+                    {
+                        if (j == navList.Count - 1)
+                        {
+                            navigationItem = navList[j];
+                        }
+                        else
+                        {
+                            if (navList[j].toe <= stationTime && navList[j + 1].toe > stationTime)
+                            {
+                                navigationItem = navList[j];
+                            }
+                        }
+                    }
+
+                    var svCoordinate = orbitCalculation(commonSVitem, navigationItem, stationTime);
+
+                    common.year = year;
+                    common.month = month;
+                    common.day = day;
+                    common.hour = commonSVitem.hour;
+                    common.minute = commonSVitem.minute;
+                    common.second = commonSVitem.second;
+                    common.num = commonSVitem.num;
+                    common.type = commonSVitem.type;
+                    common.x = svCoordinate[0];
+                    common.y = svCoordinate[1];
+                    common.z = svCoordinate[2];
+
+                    fileRepo.AddSVcoord(common);
+                }
+            }
 
             return View();
         }
@@ -78,7 +140,7 @@ namespace Monkey.Controllers
             var stream = new FileStream(root, FileMode.Open);
             var reader = new StreamReader(stream, System.Text.Encoding.ASCII);
 
-            for(int i = 0; i < 21 ; i++ )
+            for (int i = 0; i < 21; i++)
             {
                 reader.ReadLine();
             }
@@ -98,12 +160,12 @@ namespace Monkey.Controllers
             {
                 string fileLine = "";
 
-                if(j == 1)
+                if (j == 1)
                 {
                     fileLine = reader.ReadLine();
                     row = row + 1;
 
-                    if(fileLine.Length > 0)
+                    if (fileLine.Length > 0)
                     {
                         year = int.Parse(fileLine.Substring(1, 2));
                         month = int.Parse(fileLine.Substring(4, 2));
@@ -118,8 +180,8 @@ namespace Monkey.Controllers
                             var satName = fileLine.Substring((3 * k) + 32, 3);
                             sat[k] = satName;
                         }
-                    
-                        if(numSat > 12)
+
+                        if (numSat > 12)
                         {
                             fileLine = reader.ReadLine();
                             row = row + 1;
@@ -131,13 +193,13 @@ namespace Monkey.Controllers
                                 var satName = fileLine.Substring(k * 3, 3);
                                 sat[12 + k] = satName;
                             }
-                            if(numSat > 24)
+                            if (numSat > 24)
                             {
                                 fileLine = reader.ReadLine();
                                 row = row + 1;
                                 fileLine = fileLine.Trim();
 
-                                for(int k = 0; k < fileLine.Length / 3; k++)
+                                for (int k = 0; k < fileLine.Length / 3; k++)
                                 {
                                     var satName = fileLine.Substring(k * 3, 3);
                                     sat[24 + k] = satName;
@@ -169,13 +231,13 @@ namespace Monkey.Controllers
                             }
                             if (fileLine.Length > 16)
                             {
-                                if (fileLine.Substring(17,12).Trim().Length > 0)
+                                if (fileLine.Substring(17, 12).Trim().Length > 0)
                                 {
                                     observation2 = double.Parse(fileLine.Substring(17, 12));
                                 }
                             }
 
-                            eachEpoch.id = (year*10000000000+month*100000000+day*1000000+hour*10000+minute*100+second).ToString()+satName;
+                            eachEpoch.id = (year * 10000000000 + month * 100000000 + day * 1000000 + hour * 10000 + minute * 100 + second).ToString() + satName;
                             eachEpoch.year = year;
                             eachEpoch.month = month;
                             eachEpoch.day = day;
@@ -218,20 +280,20 @@ namespace Monkey.Controllers
             {
                 var fileLine = reader.ReadLine(); //1st row
 
-                navigation.prn = int.Parse(fileLine.Substring(0,2));
+                navigation.prn = int.Parse(fileLine.Substring(0, 2));
                 navigation.year = int.Parse(fileLine.Substring(3, 2));
                 navigation.month = int.Parse(fileLine.Substring(6, 2));
-                navigation.day = int.Parse(fileLine.Substring(9,2));
-                navigation.hour = int.Parse(fileLine.Substring(12,2));
-                navigation.minute = int.Parse(fileLine.Substring(15,2));
-                navigation.second = double.Parse(fileLine.Substring(18,4));
-                navigation.svClockBias = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10,double.Parse(fileLine.Substring(38,3)));
+                navigation.day = int.Parse(fileLine.Substring(9, 2));
+                navigation.hour = int.Parse(fileLine.Substring(12, 2));
+                navigation.minute = int.Parse(fileLine.Substring(15, 2));
+                navigation.second = double.Parse(fileLine.Substring(18, 4));
+                navigation.svClockBias = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
                 navigation.svClockDrift = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
                 navigation.svClockDriftRate = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
 
                 fileLine = reader.ReadLine(); //2nd row
 
-                navigation.IODE = double.Parse(fileLine.Substring(3,15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
+                navigation.IODE = double.Parse(fileLine.Substring(3, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(19, 3)));
                 navigation.crs = double.Parse(fileLine.Substring(22, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(38, 3)));
                 navigation.deltaN = double.Parse(fileLine.Substring(41, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(57, 3)));
                 navigation.m0 = double.Parse(fileLine.Substring(60, 15)) * Math.Pow(10, double.Parse(fileLine.Substring(76, 3)));
@@ -291,14 +353,14 @@ namespace Monkey.Controllers
         {
             int[] calculatedMonthDay = new int[] { 1, gpsday };
 
-            int[] monthDay = new int[] {31,28,31,30,31,30,31,31,30,31,30,31};
+            int[] monthDay = new int[] { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-            if (year%4==0)
+            if (year % 4 == 0)
             {
                 monthDay[1] = 29;
             }
 
-            while (calculatedMonthDay[1]-monthDay[calculatedMonthDay[0]-1] > 0)
+            while (calculatedMonthDay[1] - monthDay[calculatedMonthDay[0] - 1] > 0)
             {
                 calculatedMonthDay[1] = calculatedMonthDay[1] - monthDay[calculatedMonthDay[0] - 1];
                 calculatedMonthDay[0] = calculatedMonthDay[0] + 1;
@@ -306,20 +368,46 @@ namespace Monkey.Controllers
             return calculatedMonthDay;
         }
 
-        public void getList(int year, int month, int day, List<commonSV> commonSV)
-        {
-            FileRepository repo = new FileRepository();
-            var list = repo.commonNavList(year, month, day);
-        }
-
-        public void calculateOrbit(commonSV commonSV, navigation nav)
+        public double[] orbitCalculation(commonSV commonSVitem, navigation navigationItem, double stationTime)
         {
             var mu = 398600.5 * Math.Pow(10, 8);
-            var a = Math.Pow(nav.rootA,2); //Seminajor axis
-            var n = Math.Sqrt((mu)/(Math.Pow(a,3))) + nav.deltaN;
-            var weekday = (commonSV.day+Math.Floor((double)(commonSV.month+1)*26/10)+commonSV.year+Math.Floor((double)commonSV.year/4)+5-2*20) % 7;
-
+            var a = Math.Pow(navigationItem.rootA,2);
+            var n = Math.Pow((mu/Math.Pow(a,3)),(1/2)) + navigationItem.deltaN;
+            var tk = stationTime - navigationItem.toe;
+            var mk = navigationItem.m0 + n * tk;
+            var ek = mk;
+            for (int i = 0; i < 1000; i++)
+            {
+                ek = mk + navigationItem.e * Math.Sin(ek);
+            }
+            var sinvk = (Math.Sqrt(1-Math.Pow(navigationItem.e,2))*Math.Sin(ek)) / (1-navigationItem.e*Math.Cos(ek));
+            var cosvk = (Math.Cos(ek) - navigationItem.e)/(1-navigationItem.e * Math.Cos(ek));
+            var v1 = Math.Acos(cosvk);
+            var v2 = Math.Asin(sinvk);
+            var vk = (double)0;
+            if (cosvk >=0 )
+            {
+                vk = v2;
+            }
+            else
+            {
+                vk = -v2;
+            }
+            var phik = vk + navigationItem.w;
+            var dphik = navigationItem.cus * Math.Sin(2 * phik) + navigationItem.cuc * Math.Cos(2 * phik);
+            var drk = navigationItem.crs * Math.Sin(2 * phik) + navigationItem.crc * Math.Cos(2 * phik);
+            var dik = navigationItem.cis * Math.Sin(2 * phik) + navigationItem.cic * Math.Cos(2 * phik);
+            var uk = phik + dphik;
+            var rk = a * (1 - navigationItem.e * Math.Cos(ek)) + drk;
+            var ik = navigationItem.i0 + (navigationItem.iDot) * tk + dik;
+            var ohmk = navigationItem.ohm0 + navigationItem.ohmDot * tk;
+            var xp = rk * Math.Cos(uk);
+            var yp = rk * Math.Sin(uk);
+            var xs = xp * Math.Cos(ohmk) - yp * Math.Cos(ik) * Math.Sin(ohmk);
+            var ys = xp * Math.Sin(ohmk) + yp * Math.Cos(ik) * Math.Cos(ohmk);
+            var zs = yp * Math.Sin(ik);
+            double[] SVcoordinate = new double[] { xs, ys, zs };
+            return SVcoordinate;
         }
-
     }
 }

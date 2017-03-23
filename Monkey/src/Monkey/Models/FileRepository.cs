@@ -45,6 +45,14 @@ namespace Monkey.Models
 
         }
 
+        public void AddSVcoord(commonSVcoordinate coord)
+        {
+            using (IDatabase db = Connection)
+            {
+                db.Insert<commonSVcoordinate>(coord);
+            }
+        }
+
         public void DeleteAll()
         {
             using (IDatabase db = Connection)
@@ -113,13 +121,13 @@ namespace Monkey.Models
             return commonSV;
         }
 
-        public List<navigation> commonNavList(int year, int month, int day)
+        public List<navigation> commonNavList(int year, int month, int day, int svNum)
         {
             var commonNavList = new List<navigation>();
 
             using (IDatabase db = Connection)
             {
-                var queryString = "select * from navigation where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + "order by year, month, day, hour, minute, second, prn";
+                var queryString = "select * from navigation where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and prn=" + svNum.ToString() + " order by toe";
                 commonNavList = db.Fetch<navigation>(queryString);
             }
 
