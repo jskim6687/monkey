@@ -55,9 +55,12 @@ namespace Monkey.Models
 
         public void DeleteAll()
         {
-            using (IDatabase db = Connection)
+            using (var sqlConnection = new SqlConnection(connectionString))
             {
-                db.Delete("monkey");
+                sqlConnection.Open();
+                var queryString = "delete from commonSVcoordinate delete from eachepoch delete from navigation";
+                var command = new SqlCommand(queryString, sqlConnection);
+                command.ExecuteNonQuery();
             }
         }
 
