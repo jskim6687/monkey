@@ -94,12 +94,23 @@ namespace Monkey.Controllers
                 {
                     var navigationItem = navList[0];
 
+                    //
+                    if (commonSVitem.num == 3 && commonSVitem.hour == 4 && commonSVitem.minute == 24)
+                    {
+
+                    }
+                    //
+
                     //여기서 부터 반복해서 계산
                     for (int j = 0; j < navList.Count; j++)
                     {
                         if (j == navList.Count - 1)
                         {
-                            navigationItem = navList[j];
+                            if (navList[j].toe < stationTime)
+                            {
+                                navigationItem = navList[j];
+
+                            }
                         }
                         else
                         {
@@ -372,7 +383,7 @@ namespace Monkey.Controllers
         {
             var mu = 398600.5 * Math.Pow(10, 8);
             var a = Math.Pow(navigationItem.rootA,2);
-            var n = Math.Pow((mu/Math.Pow(a,3)),(1/2)) + navigationItem.deltaN;
+            var n = Math.Pow((mu/Math.Pow(a,3)),(0.5)) + navigationItem.deltaN;
             var tk = stationTime - navigationItem.toe;
             var mk = navigationItem.m0 + n * tk;
             var ek = mk;
