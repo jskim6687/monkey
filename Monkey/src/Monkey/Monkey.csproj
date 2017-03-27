@@ -45,6 +45,8 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\base\" />
+    <Folder Include="wwwroot\base\" />
+    <Folder Include="wwwroot\rover\" />
     <Folder Include="wwwroot\rover\" />
   </ItemGroup>
 
