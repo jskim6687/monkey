@@ -138,7 +138,7 @@ namespace Monkey.Controllers
                     fileRepo.AddSVcoord(common);
                 }
             }
-            fileRepo.DeleteAll();
+//            fileRepo.DeleteAll();
             return View();
         }
 
@@ -151,10 +151,25 @@ namespace Monkey.Controllers
             var stream = new FileStream(root, FileMode.Open);
             var reader = new StreamReader(stream, System.Text.Encoding.ASCII);
 
+            var readline = reader.ReadLine();
+
+            var signalNum = 0;
+
+            while (!readline.Contains("TYPES OF OBSERV"))
+            {
+                readline = reader.ReadLine();
+            }
+            signalNum = int.Parse(readline.Substring(4,2));
+            while (!reader.ReadLine().Contains("END OF HEADER"))
+            {
+            }
+            
+            /*
             for (int i = 0; i < 21; i++)
             {
                 reader.ReadLine();
             }
+            */
 
             int j = 1;
             int row = 1;
@@ -263,8 +278,11 @@ namespace Monkey.Controllers
 
                             addEpoch.Add(eachEpoch);
                         }
-                        reader.ReadLine();
-                        row = row + 1;
+                        if (signalNum > 10)
+                        {
+                            reader.ReadLine();
+                            row = row + 1;
+                        }
                         reader.ReadLine();
                         row = row + 1;
                         j = j + 1;

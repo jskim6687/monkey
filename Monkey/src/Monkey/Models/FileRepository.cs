@@ -76,7 +76,7 @@ namespace Monkey.Models
             {
                 while (hour < 24)
                 {
-                    var queryString = "select [satNum], [satType] from eachEpoch where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString() + " and satType = 'G'";
+                    var queryString = "select [satNum], [satType] from eachEpoch where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second =" + second.ToString()/* + " and satType = 'G'"*/;
                     //각 에포크마다 반복시작
                     List<epochSV> baseSV = db.Fetch<epochSV>(queryString + " and station = 'base'");
                     List<epochSV> roverSV = db.Fetch<epochSV>(queryString + " and station = 'rover'");
