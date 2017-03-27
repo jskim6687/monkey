@@ -138,7 +138,7 @@ namespace Monkey.Controllers
                     fileRepo.AddSVcoord(common);
                 }
             }
-//            fileRepo.DeleteAll();
+            fileRepo.DeleteAll();
             return View();
         }
 
