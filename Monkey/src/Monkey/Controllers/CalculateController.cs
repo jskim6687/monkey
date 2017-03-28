@@ -94,29 +94,25 @@ namespace Monkey.Controllers
                 {
                     var navigationItem = navList[0];
 
-                    //
-                    if (commonSVitem.num == 3 && commonSVitem.hour == 4 && commonSVitem.minute == 24)
-                    {
-
-                    }
-                    //
-
                     //여기서 부터 반복해서 계산
                     for (int j = 0; j < navList.Count; j++)
                     {
                         if (j == navList.Count - 1)
                         {
-                            if (navList[j].toe < stationTime)
+                            if (navList[j].toe <= stationTime)
                             {
                                 navigationItem = navList[j];
-
                             }
                         }
                         else
                         {
-                            if (navList[j].toe <= stationTime && navList[j + 1].toe > stationTime)
+                            if (navList[j].toe <= stationTime)
                             {
                                 navigationItem = navList[j];
+                                if(j == 2)
+                                {
+
+                                }
                             }
                         }
                     }
@@ -138,7 +134,7 @@ namespace Monkey.Controllers
                     fileRepo.AddSVcoord(common);
                 }
             }
-            fileRepo.DeleteAll();
+            //fileRepo.DeleteAll();
             return View();
         }
 
@@ -182,7 +178,7 @@ namespace Monkey.Controllers
             int minute = 1;
             int second = 1;
 
-            for (int i = 0; i < 2880; i++)
+            for (int i = 0; i < 5760; i++)
             {
                 string fileLine = "";
 
@@ -403,6 +399,7 @@ namespace Monkey.Controllers
             var a = Math.Pow(navigationItem.rootA,2);
             var n = Math.Pow((mu/Math.Pow(a,3)),(0.5)) + navigationItem.deltaN;
             var tk = stationTime - navigationItem.toe;
+            //var tk = 0; //only for test
             var mk = navigationItem.m0 + n * tk;
             var ek = mk;
             for (int i = 0; i < 1000; i++)
@@ -429,7 +426,8 @@ namespace Monkey.Controllers
             var uk = phik + dphik;
             var rk = a * (1 - navigationItem.e * Math.Cos(ek)) + drk;
             var ik = navigationItem.i0 + (navigationItem.iDot) * tk + dik;
-            var ohmk = navigationItem.ohm0 + navigationItem.ohmDot * tk;
+            var ohmDotE = 7.2921151467 * Math.Pow(10, -5);
+            var ohmk = navigationItem.ohm0 + navigationItem.ohmDot * tk - ohmDotE*(tk+navigationItem.toe);
             var xp = rk * Math.Cos(uk);
             var yp = rk * Math.Sin(uk);
             var xs = xp * Math.Cos(ohmk) - yp * Math.Cos(ik) * Math.Sin(ohmk);
