@@ -49,7 +49,7 @@ namespace Monkey.Controllers
             var baseRoot = Path.Combine(_environment.WebRootPath, "base\\", baseFile);
             var roverRoot = Path.Combine(_environment.WebRootPath, "rover\\", roverFile);
             var navRoot = Path.Combine(_environment.WebRootPath, "base\\", navFile);
-
+            
             makeEpoch(roverRoot, "rover"); //rover o파일 업로드
             makeEpoch(baseRoot, "base"); //base o파일 업로드
             svNavigation(navRoot); //navigation 파일 업로드
@@ -435,6 +435,66 @@ namespace Monkey.Controllers
             var zs = yp * Math.Sin(ik);
             double[] SVcoordinate = new double[] { xs, ys, zs };
             return SVcoordinate;
+        }
+        
+        public void dopCalculation(int year, int month, int day)
+        {
+            FileRepository repo = new FileRepository();
+            dop dop = new dop();
+            for(int i = 0; i < 24; i++)
+            {
+                for (int j = 0; j < 60; j++)
+                {
+                    for(int k = 0; k < 2; k++)
+                    {
+                        var hour = i;
+                        var minute = j;
+                        var second = k * 30;
+                        var SVlist = repo.getCommonSV(year, month, day, hour, minute, second);
+                        if(SVlist.Count >= 4)
+                        {
+
+                            for (int i1=0;i1 < SVlist.Count-3;i1++)
+                            {
+                                var s1 = SVlist[i1];
+
+                                for (int i2=i1+1; i2 < SVlist.Count-2;i2++)
+                                {
+                                    var s2 = SVlist[i2];
+
+                                    for (int i3=i2+1; i3 < SVlist.Count-1;i3++)
+                                    {
+                                        var s3 = SVlist[i3];
+
+                                        for (int i4=i3+1; i4 < SVlist.Count;i4++)
+                                        {
+                                            var s4 = SVlist[i4];
+
+                                            dop.year = year;
+                                            dop.month = month;
+                                            dop.day = day;
+                                            dop.hour = hour;
+                                            dop.minute = minute;
+                                            dop.second = second;
+                                            dop.prn1 = s1.num;
+                                            dop.prn2 = s2.num;
+                                            dop.prn3 = s3.num;
+                                            dop.prn4 = s4.num;
+
+                                            if (i4 == 3)
+                                            {
+                                            }
+                                            else
+                                            {
+                                            }                                            
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
         }
     }
 }

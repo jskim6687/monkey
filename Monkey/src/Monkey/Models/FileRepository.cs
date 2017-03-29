@@ -136,6 +136,18 @@ namespace Monkey.Models
 
             return commonNavList;
         }
+
+        public List<commonSVcoordinate> getCommonSV(int year, int month, int day, int hour, int minute, int second)
+        {
+            var commonList = new List<commonSVcoordinate>();
+            using (IDatabase db = Connection)
+            {
+                var queryString = "select * from commonSVcoordinate where year=" + year.ToString() + " and month=" + month.ToString() + " and day=" + day.ToString() + " and hour=" + hour.ToString() + " and minute=" + minute.ToString() + " and second=" + second.ToString() + " order by num";
+                commonList = db.Fetch<commonSVcoordinate>(queryString);
+            }
+            return commonList;
+        }
+
         /*
                 public void getOfileInfo(string oFileName)
                 {

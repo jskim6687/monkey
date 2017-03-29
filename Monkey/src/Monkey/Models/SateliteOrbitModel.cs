@@ -97,4 +97,23 @@ namespace Monkey.Models
         public double z { get; set; }
     }
 
+    public class dop
+    {
+        public int year { get; set; }
+        public int month { get; set; }
+        public int day { get; set; }
+        public int hour { get; set; }
+        public int minute { get; set; }
+        public int second { get; set; }
+        public int prn1 { get; set; }
+        public int prn2 { get; set; }
+        public int prn3 { get; set; }
+        public int prn4 { get; set; }
+        public double GDOP { get; set; }
+        public double HDOP { get; set; }
+        public double VDOP { get; set; }
+        public double TDOP { get; set; }
+        public double PDOP { get; set; }
+    }
+
 }
