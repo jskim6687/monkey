@@ -395,7 +395,7 @@ namespace Monkey.Controllers
 
         public double[] orbitCalculation(commonSV commonSVitem, navigation navigationItem, double stationTime)
         {
-            var mu = 398600.5 * Math.Pow(10, 8);
+            var mu = 398600.5 * Math.Pow(10, 9);
             var a = Math.Pow(navigationItem.rootA,2);
             var n = Math.Pow((mu/Math.Pow(a,3)),(0.5)) + navigationItem.deltaN;
             var tk = stationTime - navigationItem.toe;
@@ -417,7 +417,7 @@ namespace Monkey.Controllers
             }
             else
             {
-                vk = -v2;
+                vk = Math.PI-v2;
             }
             var phik = vk + navigationItem.w;
             var dphik = navigationItem.cus * Math.Sin(2 * phik) + navigationItem.cuc * Math.Cos(2 * phik);
