@@ -53,6 +53,14 @@ namespace Monkey.Models
             }
         }
 
+        public void AddDOP(dop dop)
+        {
+            using (IDatabase db = Connection)
+            {
+                db.Insert<dop>(dop);
+            }
+        }
+
         public void DeleteAll()
         {
             using (var sqlConnection = new SqlConnection(connectionString))

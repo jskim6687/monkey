@@ -54,6 +54,9 @@
     <Reference Include="MySql.Data">
       <HintPath>reference\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing">
+      <HintPath>reference\System.Drawing.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -7,11 +7,7 @@
 <h1>S/V orbit information is well uploaded</h1>
 <h1>please check the detail</h1>
 <a asp-controller="Calculate" asp-action="CommonOrbit">common satelite orbit</a>
+
 <br />
-@await Html.PartialAsync("_CommonOrbit")
-@Html.Partial("_CommonOrbit")
+<a asp-controller="Calculate" asp-action="DOP">check the DOP in time-series</a>
 <br />
-<a>check the DOP in time-series</a>
-<br />
-@await Html.PartialAsync("_DOP")
-@Html.Partial("_DOP")

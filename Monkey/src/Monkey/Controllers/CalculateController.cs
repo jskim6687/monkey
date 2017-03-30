@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using CSML;
 using Microsoft.AspNetCore.Hosting;
-using System.IO;
+using Microsoft.AspNetCore.Mvc;
 using Monkey.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -135,6 +134,12 @@ namespace Monkey.Controllers
                 }
             }
             //fileRepo.DeleteAll();
+            return View();
+        }
+
+        public IActionResult DOP()
+        {
+            dopCalculation(15,10,2,-3062023.563, 4055449.033, 3841819.213);
             return View();
         }
 
@@ -437,64 +442,110 @@ namespace Monkey.Controllers
             return SVcoordinate;
         }
         
-        public void dopCalculation(int year, int month, int day)
+        public void dopCalculation(int year, int month, int day, double xs, double ys, double zs)
         {
             FileRepository repo = new FileRepository();
             dop dop = new dop();
-            for(int i = 0; i < 24; i++)
+            Matrix mat = new Matrix();
+
+            for (int i = 0; i < 24; i++)
             {
                 for (int j = 0; j < 60; j++)
                 {
-                    for(int k = 0; k < 2; k++)
+                    for (int k = 0; k < 2; k++)
                     {
                         var hour = i;
                         var minute = j;
                         var second = k * 30;
                         var SVlist = repo.getCommonSV(year, month, day, hour, minute, second);
-                        if(SVlist.Count >= 4)
+                        if (SVlist.Count >= 4)
                         {
-
-                            for (int i1=0;i1 < SVlist.Count-3;i1++)
+                            for (int i1 = 0; i1 < SVlist.Count - 3; i1++)
                             {
                                 var s1 = SVlist[i1];
+                                var A1 = unitVector(SVlist[i1].x,SVlist[i1].y,SVlist[i1].z,xs,ys,zs);
 
-                                for (int i2=i1+1; i2 < SVlist.Count-2;i2++)
+                                for (int i2 = i1 + 1; i2 < SVlist.Count - 2; i2++)
                                 {
                                     var s2 = SVlist[i2];
+                                    var A2 = unitVector(SVlist[i2].x, SVlist[i2].y, SVlist[i2].z, xs, ys, zs);
 
-                                    for (int i3=i2+1; i3 < SVlist.Count-1;i3++)
+                                    for (int i3 = i2 + 1; i3 < SVlist.Count - 1; i3++)
                                     {
                                         var s3 = SVlist[i3];
+                                        var A3 = unitVector(SVlist[i3].x, SVlist[i3].y, SVlist[i3].z, xs, ys, zs);
 
-                                        for (int i4=i3+1; i4 < SVlist.Count;i4++)
+                                        for (int i4 = i3 + 1; i4 < SVlist.Count; i4++)
                                         {
                                             var s4 = SVlist[i4];
+                                            var A4 = unitVector(SVlist[i4].x, SVlist[i4].y, SVlist[i4].z, xs, ys, zs);
 
+                                            string matDefine = "";
+                                            matDefine = matDefine + A1[0].ToString() + "," + A1[1].ToString() + "," + A1[2].ToString() + ",-1;";
+                                            matDefine = matDefine + A2[0].ToString() + "," + A2[1].ToString() + "," + A2[2].ToString() + ",-1;";
+                                            matDefine = matDefine + A3[0].ToString() + "," + A3[1].ToString() + "," + A3[2].ToString() + ",-1;";
+                                            matDefine = matDefine + A4[0].ToString() + "," + A4[1].ToString() + "," + A4[2].ToString() + ",-1";
+
+                                            //double[,] A = new double[4, 4] { {A1[0], A1[1], A1[2], -1 },{ A2[0], A2[1], A2[2], -1 },{ A3[0], A3[1], A3[2], -1 },{ A4[0], A4[1], A4[2], -1 } };
+                                            var A = new Matrix(matDefine);
+                                            var Q = mat.product(A.Transpose(), A).Inverse();
+                                            var VDOP = Math.Sqrt(Math.Pow(Q[1, 1].Re, 2));
+                                            var HDOP = Math.Sqrt(Math.Pow(Q[0, 0].Re, 2) + Math.Pow(Q[1, 1].Re, 2));
+                                            var PDOP = Math.Sqrt(Math.Pow(Q[0, 0].Re, 2) + Math.Pow(Q[1, 1].Re, 2) + Math.Pow(Q[2, 2].Re, 2));
+                                            var TDOP = Math.Sqrt(Math.Pow(Q[3, 3].Re, 2));
+                                            var GDOP = Math.Sqrt(Math.Pow(PDOP,2)+Math.Pow(TDOP,2));
+                                            
                                             dop.year = year;
                                             dop.month = month;
                                             dop.day = day;
                                             dop.hour = hour;
                                             dop.minute = minute;
                                             dop.second = second;
-                                            dop.prn1 = s1.num;
-                                            dop.prn2 = s2.num;
-                                            dop.prn3 = s3.num;
-                                            dop.prn4 = s4.num;
-
+                                            
                                             if (i4 == 3)
                                             {
+                                                dop.prn1 = s1.num;
+                                                dop.prn2 = s2.num;
+                                                dop.prn3 = s3.num;
+                                                dop.prn4 = s4.num;
+                                                dop.VDOP = VDOP;
+                                                dop.HDOP = HDOP;
+                                                dop.PDOP = PDOP;
+                                                dop.TDOP = TDOP;
+                                                dop.GDOP = GDOP;
                                             }
+
                                             else
                                             {
-                                            }                                            
+                                                if(dop.GDOP >= GDOP)
+                                                {
+                                                    dop.prn1 = s1.num;
+                                                    dop.prn2 = s2.num;
+                                                    dop.prn3 = s3.num;
+                                                    dop.prn4 = s4.num;
+                                                    dop.VDOP = VDOP;
+                                                    dop.HDOP = HDOP;
+                                                    dop.PDOP = PDOP;
+                                                    dop.TDOP = TDOP;
+                                                    dop.GDOP = GDOP;
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
+                            repo.AddDOP(dop);
                         }
-
                     }
                 }
+            }
+        }
+
+        public double[] unitVector(double xi, double yi, double zi, double xs, double ys, double zs)
+        {
+            var Ri = Math.Sqrt(Math.Pow((xi-xs),2)+Math.Pow((yi-ys),2)+Math.Pow((zi-zs),2));
+            double[] i = new double[] {(xi-xs)/Ri,(yi-ys)/Ri,(zi-zs)/Ri};
+            return i;
         }
     }
 }
