@@ -3588,9 +3588,9 @@ namespace CSML
                         Complex value = new Complex(0,0);
                         for(int k = 0; k < B.RowCount; k++)
                         {
-                            value = value + A[j, k] * B[k, j];
+                            value = value + A[i+1, k+1] * B[k+1, j+1];
                         }
-                        P[i, j] = value;
+                        P[i+1, j+1] = value;
                     }
                 }
             }

@@ -488,11 +488,13 @@ namespace Monkey.Controllers
 
                                             //double[,] A = new double[4, 4] { {A1[0], A1[1], A1[2], -1 },{ A2[0], A2[1], A2[2], -1 },{ A3[0], A3[1], A3[2], -1 },{ A4[0], A4[1], A4[2], -1 } };
                                             var A = new Matrix(matDefine);
+                                            var AT = A.Transpose();
+                                            var ATA = mat.product(AT, A);
                                             var Q = mat.product(A.Transpose(), A).Inverse();
-                                            var VDOP = Math.Sqrt(Math.Pow(Q[1, 1].Re, 2));
-                                            var HDOP = Math.Sqrt(Math.Pow(Q[0, 0].Re, 2) + Math.Pow(Q[1, 1].Re, 2));
-                                            var PDOP = Math.Sqrt(Math.Pow(Q[0, 0].Re, 2) + Math.Pow(Q[1, 1].Re, 2) + Math.Pow(Q[2, 2].Re, 2));
-                                            var TDOP = Math.Sqrt(Math.Pow(Q[3, 3].Re, 2));
+                                            var VDOP = Math.Sqrt(Math.Pow(Q[2, 2].Re, 2));
+                                            var HDOP = Math.Sqrt(Math.Pow(Q[1, 1].Re, 2) + Math.Pow(Q[2, 2].Re, 2));
+                                            var PDOP = Math.Sqrt(Math.Pow(Q[1, 1].Re, 2) + Math.Pow(Q[2, 2].Re, 2) + Math.Pow(Q[3, 3].Re, 2));
+                                            var TDOP = Math.Sqrt(Math.Pow(Q[4, 4].Re, 2));
                                             var GDOP = Math.Sqrt(Math.Pow(PDOP,2)+Math.Pow(TDOP,2));
                                             
                                             dop.year = year;
