@@ -133,13 +133,32 @@ namespace Monkey.Controllers
                     fileRepo.AddSVcoord(common);
                 }
             }
+
+            ViewData["year"] = year.ToString();
+            ViewData["month"] = month.ToString();
+            ViewData["day"] = day.ToString();
+            ViewData["base"] = baseFile.Substring(0,4);
+
             //fileRepo.DeleteAll();
             return View();
         }
 
-        public IActionResult DOP()
+        [HttpPost]
+        public IActionResult DOP(string year,string month, string day, string xs, string ys, string zs)
         {
-            dopCalculation(15,10,2,-3062023.563, 4055449.033, 3841819.213);
+            var yearInt = int.Parse(year);
+            var monthInt = int.Parse(month);
+            var dayint = int.Parse(day);
+            var doublex = double.Parse(xs);
+            var doubley = double.Parse(ys);
+            var doublez = double.Parse(zs);
+
+            dopCalculation(yearInt, monthInt, dayint, doublex, doubley, doublez);
+            return DOPGraph(yearInt, monthInt, dayint);
+        }
+
+        public IActionResult DOPGraph(int year, int month, int day)
+        {
             return View();
         }
 
