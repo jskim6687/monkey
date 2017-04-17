@@ -127,7 +127,7 @@ namespace Monkey.Models
         public int day { get; set; }
         public int hour { get; set; }
         public int minute { get; set; }
-        public int second { get; set; }
+        public double second { get; set; }
         public double clockBias { get; set; }
         public double relFreqBias { get; set; }
         public double msgFrameTime { get; set; }

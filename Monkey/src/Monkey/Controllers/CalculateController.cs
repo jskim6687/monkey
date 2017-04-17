@@ -68,6 +68,7 @@ namespace Monkey.Controllers
 
             var weekDay = (day + Math.Floor((month + 1) * 2.6) + year + Math.Floor((double)year / 4) - 36) % 7;
 
+
             FileRepository fileRepo = new FileRepository();
             var commonSV = fileRepo.selectEachSV(year, month, day);
 
@@ -402,6 +403,50 @@ namespace Monkey.Controllers
             var reader = new StreamReader(stream, System.Text.Encoding.ASCII);
             var addGfile = new FileRepository();
 
+            var navigation = new glonassNav();
+
+            var line = reader.ReadLine();
+
+            while (!line.Contains("END OF HEADER"))
+            {
+
+                line = reader.ReadLine();
+            }
+
+            while (reader.EndOfStream == false)
+            {
+                line = reader.ReadLine();
+                navigation.prn = int.Parse(line.Substring(0, 2));
+                navigation.year = int.Parse(line.Substring(3, 2));
+                navigation.month = int.Parse(line.Substring(6, 2));
+                navigation.day = int.Parse(line.Substring(9, 2));
+                navigation.hour = int.Parse(line.Substring(12, 2));
+                navigation.minute = int.Parse(line.Substring(15, 2));
+                navigation.second = double.Parse(line.Substring(17, 4));
+                navigation.clockBias = double.Parse(line.Substring(22, 15)) * Math.Pow(10, double.Parse(line.Substring(38, 3)));
+                navigation.relFreqBias = double.Parse(line.Substring(41, 15)) * Math.Pow(10, double.Parse(line.Substring(57, 3)));
+                navigation.msgFrameTime = double.Parse(line.Substring(60, 15)) * Math.Pow(10, double.Parse(line.Substring(76, 3)));
+
+                line = reader.ReadLine();
+                navigation.positionX = double.Parse(line.Substring(3, 15)) * Math.Pow(10, double.Parse(line.Substring(19, 3)));
+                navigation.velocityXdot = double.Parse(line.Substring(22, 15)) * Math.Pow(10, double.Parse(line.Substring(38, 3)));
+                navigation.accelX = double.Parse(line.Substring(41, 15)) * Math.Pow(10, double.Parse(line.Substring(57, 3)));
+                navigation.health = double.Parse(line.Substring(60, 15)) * Math.Pow(10, double.Parse(line.Substring(76, 3)));
+
+                line = reader.ReadLine();
+                navigation.positionY = double.Parse(line.Substring(3, 15)) * Math.Pow(10, double.Parse(line.Substring(19, 3)));
+                navigation.velocityYdot = double.Parse(line.Substring(22, 15)) * Math.Pow(10, double.Parse(line.Substring(38, 3)));
+                navigation.accelY = double.Parse(line.Substring(41, 15)) * Math.Pow(10, double.Parse(line.Substring(57, 3)));
+                navigation.freqNum = double.Parse(line.Substring(60, 15)) * Math.Pow(10, double.Parse(line.Substring(76, 3)));
+
+                line = reader.ReadLine();
+                navigation.positionZ = double.Parse(line.Substring(3, 15)) * Math.Pow(10, double.Parse(line.Substring(19, 3)));
+                navigation.velocityZdot = double.Parse(line.Substring(22, 15)) * Math.Pow(10, double.Parse(line.Substring(38, 3)));
+                navigation.accelZ = double.Parse(line.Substring(41, 15)) * Math.Pow(10, double.Parse(line.Substring(57, 3)));
+                navigation.ageOfOper = double.Parse(line.Substring(60, 15)) * Math.Pow(10, double.Parse(line.Substring(76, 3)));
+
+                addGfile.AddGfile(navigation);
+            }
         }
 
         public IActionResult Delete()
