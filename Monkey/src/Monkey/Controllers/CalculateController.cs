@@ -10,6 +10,7 @@ using System.IO;
 
 namespace Monkey.Controllers
 {
+
     public class CalculateController : Controller
     {
         private IHostingEnvironment _environment;
@@ -45,13 +46,17 @@ namespace Monkey.Controllers
         public IActionResult Orbit(string baseFile, string roverFile)
         {
             var navFile = baseFile.Remove(11, 1) + "n";
+            var GLnavFIle = baseFile.Remove(11, 1) + "g";
+
             var baseRoot = Path.Combine(_environment.WebRootPath, "base\\", baseFile);
             var roverRoot = Path.Combine(_environment.WebRootPath, "rover\\", roverFile);
             var navRoot = Path.Combine(_environment.WebRootPath, "base\\", navFile);
-            
+            var GLnavRoot = Path.Combine(_environment.WebRootPath, "base\\", GLnavFIle);
+
             makeEpoch(roverRoot, "rover"); //rover o파일 업로드
             makeEpoch(baseRoot, "base"); //base o파일 업로드
             svNavigation(navRoot); //navigation 파일 업로드
+            glnNavigation(GLnavRoot); //glonass navigation file upload;
 
             var year = int.Parse(baseFile.Substring(9, 2));
             var gpsday = int.Parse(baseFile.Substring(4, 3));
@@ -390,6 +395,14 @@ namespace Monkey.Controllers
                 addNfile.AddNfile(navigation);
             }
         } //N파일 리딩 및 업로드
+
+        public void glnNavigation(string root)
+        {
+            var stream = new FileStream(root, FileMode.Open);
+            var reader = new StreamReader(stream, System.Text.Encoding.ASCII);
+            var addGfile = new FileRepository();
+
+        }
 
         public IActionResult Delete()
         {

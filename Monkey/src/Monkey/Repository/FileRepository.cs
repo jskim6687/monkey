@@ -45,6 +45,14 @@ namespace Monkey.Models
 
         }
 
+        public void AddGfile(glonassNav nav)
+        {
+            using (IDatabase db = Connection)
+            {
+                db.Insert<glonassNav>(nav);
+            }
+        }
+
         public void AddSVcoord(commonSVcoordinate coord)
         {
             using (IDatabase db = Connection)

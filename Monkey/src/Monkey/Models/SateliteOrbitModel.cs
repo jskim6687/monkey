@@ -82,6 +82,7 @@ namespace Monkey.Models
         public string type { get; set; }
     }
 
+    [TableName("commonSVcoordinate")]
     public class commonSVcoordinate
     {
         public int year { get; set; }
@@ -97,6 +98,7 @@ namespace Monkey.Models
         public double z { get; set; }
     }
 
+    [TableName("dop")]
     public class dop
     {
         public int year { get; set; }
@@ -116,4 +118,30 @@ namespace Monkey.Models
         public double PDOP { get; set; }
     }
 
+    [TableName("glonassNav")]
+    public class glonassNav
+    {
+        public int prn { get; set; }
+        public int year { get; set; }
+        public int month { get; set; }
+        public int day { get; set; }
+        public int hour { get; set; }
+        public int minute { get; set; }
+        public int second { get; set; }
+        public double clockBias { get; set; }
+        public double relFreqBias { get; set; }
+        public double msgFrameTime { get; set; }
+        public double positionX { get; set; }
+        public double velocityXdot { get; set; }
+        public double accelX { get; set; }
+        public double health { get; set; }
+        public double positionY { get; set; }
+        public double velocityYdot { get; set; }
+        public double accelY { get; set; }
+        public double freqNum { get; set; }
+        public double positionZ { get; set; }
+        public double velocityZdot { get; set; }
+        public double accelZ { get; set; }
+        public double ageOfOper { get; set; }
+    }
 }
