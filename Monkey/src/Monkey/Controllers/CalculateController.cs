@@ -70,7 +70,7 @@ namespace Monkey.Controllers
 
 
             FileRepository fileRepo = new FileRepository();
-            var commonSV = fileRepo.selectEachSV(year, month, day);
+            var commonSV = fileRepo.selectEachSVG(year, month, day); //공통 위성 추출
 
             var navList = new List<navigation>();
 
@@ -139,6 +139,8 @@ namespace Monkey.Controllers
                     fileRepo.AddSVcoord(common);
                 }
             }
+
+            var commonSVR = fileRepo.selectEachSVR(year, month, day);
 
             ViewData["year"] = year.ToString();
             ViewData["month"] = month.ToString();
